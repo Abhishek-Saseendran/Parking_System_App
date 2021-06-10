@@ -8,4 +8,6 @@
     <color name="colorAccent">#5fa8d3</color>
     <color name="colorSecondaryText">#757575</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="colorRedLight">#eb424d</color>
+    ,<color name="colorRedLighter">#f7606a</color>
 </resources>

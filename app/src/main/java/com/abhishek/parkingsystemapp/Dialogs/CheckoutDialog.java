@@ -29,17 +29,17 @@ import java.util.Locale;
 public class CheckoutDialog extends AppCompatDialogFragment {
 
     TextView tvFair, tvArrival, tvExit;
-    ProgressBar progressBar;
+    //ProgressBar progressBar;
     AppUser user;
     UserHistory history;
     double amount = 0;
 
     CheckoutDialogListener listener;
 
-    public CheckoutDialog(AppUser user, UserHistory history, ProgressBar progressBar) {
+    public CheckoutDialog(AppUser user, UserHistory history){//}, ProgressBar progressBar) {
         this.user = user;
         this.history = history;
-        this.progressBar = progressBar;
+        //this.progressBar = progressBar;
     }
 
     @NonNull
@@ -84,12 +84,12 @@ public class CheckoutDialog extends AppCompatDialogFragment {
 
         builder.setView(view)
                 .setTitle("Confirm")
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }
-                })
+//                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        //progressBar.setVisibility(View.INVISIBLE);
+//                    }
+//                })
                 .setPositiveButton("Checkout", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -99,7 +99,7 @@ public class CheckoutDialog extends AppCompatDialogFragment {
                         else{
                             dialog.cancel();
                             Toast.makeText(getActivity(), "Insufficient balance!! Please recharge wallet", Toast.LENGTH_SHORT).show();
-                            progressBar.setVisibility(View.INVISIBLE);
+                            //progressBar.setVisibility(View.INVISIBLE);
                         }
                     }
                 });

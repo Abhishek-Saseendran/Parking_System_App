@@ -5,6 +5,7 @@ import com.google.firebase.Timestamp;
 public class UserHistory {
 
     String transactionId;
+    Timestamp bookingTime;
     Timestamp arrival;
     Timestamp exit;
     double amount;
@@ -12,8 +13,9 @@ public class UserHistory {
     public UserHistory() {
     }
 
-    public UserHistory(String transactionId, Timestamp arrival, Timestamp exit, double amount) {
+    public UserHistory(String transactionId, Timestamp bookingTime, Timestamp arrival, Timestamp exit, double amount) {
         this.transactionId = transactionId;
+        this.bookingTime = bookingTime;
         this.arrival = arrival;
         this.exit = exit;
         this.amount = amount;
@@ -21,6 +23,14 @@ public class UserHistory {
 
     public String getTransactionId() {
         return transactionId;
+    }
+
+    public Timestamp getBookingTime() {
+        return bookingTime;
+    }
+
+    public void setBookingTime(Timestamp bookingTime) {
+        this.bookingTime = bookingTime;
     }
 
     public void setTransactionId(String transactionId) {

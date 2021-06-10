@@ -148,7 +148,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
                 else{
 
-                    if(license.length() == 19 && dlNumber.length() == 16) //19 characters including " - " and 16 characters for dlNumber
+                    if(license.length() >= 18 && dlNumber.length() == 16) //18 or 19 characters including " - " and 16 characters for dlNumber
                         registerUser(name, license, phone, email, password, dlNumber);
                     else
                         Toast.makeText(RegisterActivity.this, "Enter correct credentials", Toast.LENGTH_SHORT).show();
@@ -175,7 +175,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     public void onComplete(@NonNull @NotNull Task task) {
                                         if (task.isSuccessful()){
                                             firestore = FirebaseFirestore.getInstance();
-                                            AppUser user = new AppUser(name, license, phone, email, 0.00, dlNumber, "", "");
+                                            AppUser user = new AppUser(name, license, phone, email, 0.00, dlNumber, "", "", false, false);
                                             firestore.collection("USERS")
                                                     .document(firebaseAuth.getCurrentUser().getUid())
                                                     .set(user)

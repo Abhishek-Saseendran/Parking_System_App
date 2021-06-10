@@ -1,6 +1,7 @@
 package com.abhishek.parkingsystemapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -32,7 +33,12 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -46,6 +52,9 @@ public class MainActivity extends AppCompatActivity
 
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firestore;
+
+    AppUser userRealTimeInstance;
+    boolean previousParked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +120,44 @@ public class MainActivity extends AppCompatActivity
                     .replace(R.id.fragment_container, new BookingFragment()).commit();
         }
 
+        firestore = FirebaseFirestore.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable @org.jetbrains.annotations.Nullable DocumentSnapshot value,
+                                        @Nullable @org.jetbrains.annotations.Nullable FirebaseFirestoreException error) {
+                        if(value != null && value.exists()){
+                            Log.d("User update : ", "Current data: " + value.getData());
+                            userRealTimeInstance = value.toObject(AppUser.class);
+                            previousParked = userRealTimeInstance.isParked();
+
+                            if(userRealTimeInstance.isParked() && !userRealTimeInstance.getTransactionId().isEmpty()){
+                                //Change Arrival time in User History
+                                Log.d("Changing arrival time ", "" + Timestamp.now());
+                                firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
+                                        .collection("HISTORY").document(userRealTimeInstance.getTransactionId())
+                                        .update("arrival", Timestamp.now())
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull @NotNull Task<Void> task) {
+                                                Toast.makeText(MainActivity.this, "Hello!! You've arrived!!", Toast.LENGTH_SHORT)
+                                                        .show();
+                                            }
+                                        });
+                            }
+                            else if(userRealTimeInstance.isIsReady() && !userRealTimeInstance.getTransactionId().isEmpty()){
+                                //Compute Amount
+                                Log.d("Computing check out!! ", "Checking out!!");
+                                checkoutSlot();
+                            }
+                        }
+                        else {
+                            Log.d("User update : ", "Current data: null");
+                        }
+                    }
+                });
     }
 
     @Override
@@ -118,6 +165,56 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.toolbar_signout, menu);
         return true;
     }
+
+    /////
+    private void checkoutSlot() {
+        //Confirm if user is exiting
+        //Calculate Fair
+        //If wallet has sufficient balance ://Update history
+                                            //Update Parking Slot document
+                                            //Set user slot number to empty and transationId to empty and deduct amount from wallet
+        //Else : Do nothing!!
+
+        if(!userRealTimeInstance.getSlotNumber().isEmpty() && !userRealTimeInstance.getTransactionId().isEmpty())
+            openCheckoutDialog();
+
+        updateUserToNotReady();
+
+    }
+
+    private void updateUserToNotReady() {
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
+        firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
+                .update("isReady", false)
+                .addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task task) {
+                        Log.d("user to not ready!!", " Done!!");
+                    }
+                });
+    }
+
+    private void openCheckoutDialog() {
+        //progressBar.setVisibility(View.VISIBLE);
+        final UserHistory[] history = {new UserHistory()};
+        firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
+                .collection("HISTORY").document(userRealTimeInstance.getTransactionId())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+                        if(task.isSuccessful() && task.getResult() != null){
+                            history[0] = task.getResult().toObject(UserHistory.class);
+                        }
+                    }
+                });
+        CheckoutDialog checkout = new CheckoutDialog(userRealTimeInstance, history[0]);//, progressBar);
+        checkout.show(getSupportFragmentManager(), "Checkout Dialog");
+    }
+    //////
+
 
     @Override
     public void recharge(double amount, AppUser user) {
@@ -152,7 +249,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onSuccess(Void unused) {
 
-                        UserHistory history = new UserHistory("", Timestamp.now(), null, 50);
+                        UserHistory history = new UserHistory("", Timestamp.now(), null, null, 50);
                         firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
                                 .collection("HISTORY")
                                 .add(history)
@@ -292,4 +389,5 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
     }
+
 }

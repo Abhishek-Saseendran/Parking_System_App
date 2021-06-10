@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,14 +41,24 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         UserHistory history = historyList.get(position);
 
-        String arrival = history.getArrival().toDate().toString();
-        arrival = arrival.substring(0, arrival.length() - 14) + arrival.substring(arrival.length() - 4);
+        String bookTime = history.getBookingTime().toDate().toString();
+        bookTime = bookTime.substring(0, bookTime.length() - 14) + bookTime.substring(bookTime.length() - 4);
+        String arrival = "---";
+        if(history.getArrival() != null){
+            arrival = history.getExit().toDate().toString();
+            arrival = arrival.substring(0, arrival.length() - 14) + arrival.substring(arrival.length() - 4);
+        }
+        else{
+            holder.rlMain.setBackground(context.getResources().getDrawable(R.drawable.edit_text_background_cancelled));
+        }
+//        arrival = history.getArrival().toDate().toString();
+//        arrival = arrival.substring(0, arrival.length() - 14) + arrival.substring(arrival.length() - 4);
         String exit = "---";
         if (history.getExit() != null){
             exit = history.getExit().toDate().toString();
             exit = exit.substring(0, exit.length() - 14) + exit.substring(exit.length() - 4);
         }
-
+        holder.tvBooking.setText(bookTime);
         holder.tvArrival.setText(arrival);
         holder.tvExit.setText(exit);
         holder.tvAmount.setText("₹".concat(String.valueOf(history.getAmount())));
@@ -62,15 +73,18 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        TextView tvArrival, tvExit, tvAmount, tvTransaction;
+        TextView tvBooking, tvArrival, tvExit, tvAmount, tvTransaction;
+        RelativeLayout rlMain;
 
         public ViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
 
+            tvBooking = itemView.findViewById(R.id.tvBooking_historyList);
             tvArrival = itemView.findViewById(R.id.tvArrival_historyList);
             tvExit = itemView.findViewById(R.id.tvCheckout_historyList);
             tvAmount = itemView.findViewById(R.id.tvAmount_historyList);
             tvTransaction = itemView.findViewById(R.id.tvTransaction_historyList);
+            rlMain = itemView.findViewById(R.id.rlhistoryList_main);
 
         }
     }

@@ -8,15 +8,20 @@ public class ParkingSlot {
     String userId;
     String slotId;
     String transactionId;
+    boolean parked;
+    boolean elapsed_timer;
 
     public ParkingSlot() {
     }
 
-    public ParkingSlot(boolean booked, String userId, String slotId, String transactionId) {
+    public ParkingSlot(boolean booked, String userId, String slotId, String transactionId,
+                       boolean parked, boolean elapsed_timer) {
         this.booked = booked;
         this.userId = userId;
         this.slotId = slotId;
         this.transactionId = transactionId;
+        this.parked = parked;
+        this.elapsed_timer = elapsed_timer;
     }
 
     public boolean isBooked() {
@@ -49,5 +54,21 @@ public class ParkingSlot {
 
     public void setSlotId(String slotId) {
         this.slotId = slotId;
+    }
+
+    public boolean isParked() {
+        return parked;
+    }
+
+    public void setParked(boolean parked) {
+        this.parked = parked;
+    }
+
+    public boolean isElapsed_timer() {
+        return elapsed_timer;
+    }
+
+    public void setElapsed_timer(boolean elapsed_timer) {
+        this.elapsed_timer = elapsed_timer;
     }
 }

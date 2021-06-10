@@ -86,12 +86,12 @@ public class BookingFragment extends Fragment {
             }
         });
 
-        rlHidden.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkoutSlot();
-            }
-        });
+//        rlHidden.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                checkoutSlot();
+//            }
+//        });
 
         return view;
     }
@@ -199,23 +199,23 @@ public class BookingFragment extends Fragment {
         booking.show(getActivity().getSupportFragmentManager(), "Booking Dialog");
     }
 
-    private void checkoutSlot() {
-        //Confirm if user is exiting
-        //Calculate Fair
-        //If wallet has sufficient balance ://Update history
-                                            //Update Parking Slot document
-                                            //Set user slot number to empty and transationId to empty and deduct amount from wallet
-        //Else : Do nothing!!
-
-        if(!user.getSlotNumber().isEmpty())
-            openCheckoutDialog();
-    }
-
-    private void openCheckoutDialog() {
-        progressBar.setVisibility(View.VISIBLE);
-        CheckoutDialog checkout = new CheckoutDialog(user, history, progressBar);
-        checkout.show(getActivity().getSupportFragmentManager(), "Checkout Dialog");
-    }
+//    private void checkoutSlot() {
+//        //Confirm if user is exiting
+//        //Calculate Fair
+//        //If wallet has sufficient balance ://Update history
+//                                            //Update Parking Slot document
+//                                            //Set user slot number to empty and transationId to empty and deduct amount from wallet
+//        //Else : Do nothing!!
+//
+//        if(!user.getSlotNumber().isEmpty())
+//            openCheckoutDialog();
+//    }
+//
+//    private void openCheckoutDialog() {
+//        progressBar.setVisibility(View.VISIBLE);
+//        CheckoutDialog checkout = new CheckoutDialog(user, history, progressBar);
+//        checkout.show(getActivity().getSupportFragmentManager(), "Checkout Dialog");
+//    }
 
 
 }

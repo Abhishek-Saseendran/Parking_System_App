@@ -10,12 +10,14 @@ public class AppUser {
     double wallet;
     String slotNumber;
     String transactionId;
+    boolean parked;
+    boolean isReady;
 
     public AppUser() {
     }
 
     public AppUser(String name, String license, String phone, String email, double wallet, String dlNumber, String slotNumber,
-                   String transactionId) {
+                   String transactionId, boolean parked, boolean isReady) {
         this.name = name;
         this.license = license;
         this.phone = phone;
@@ -24,6 +26,8 @@ public class AppUser {
         this.dlNumber = dlNumber;
         this.slotNumber = slotNumber;
         this.transactionId = transactionId;
+        this.parked = parked;
+        this.isReady = isReady;
     }
 
     public String getName() {
@@ -88,5 +92,21 @@ public class AppUser {
 
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
+    }
+
+    public boolean isParked() {
+        return parked;
+    }
+
+    public void setParked(boolean parked) {
+        this.parked = parked;
+    }
+
+    public boolean isIsReady() {
+        return isReady;
+    }
+
+    public void setIsReady(boolean ready) {
+        isReady = ready;
     }
 }
