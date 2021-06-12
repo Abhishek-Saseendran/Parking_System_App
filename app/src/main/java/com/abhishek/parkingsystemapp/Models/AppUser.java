@@ -12,12 +12,13 @@ public class AppUser {
     String transactionId;
     boolean parked;
     boolean isReady;
+    boolean isCancel;
 
     public AppUser() {
     }
 
     public AppUser(String name, String license, String phone, String email, double wallet, String dlNumber, String slotNumber,
-                   String transactionId, boolean parked, boolean isReady) {
+                   String transactionId, boolean parked, boolean isReady, boolean isCancel) {
         this.name = name;
         this.license = license;
         this.phone = phone;
@@ -28,6 +29,7 @@ public class AppUser {
         this.transactionId = transactionId;
         this.parked = parked;
         this.isReady = isReady;
+        this.isCancel = isCancel;
     }
 
     public String getName() {
@@ -108,5 +110,13 @@ public class AppUser {
 
     public void setIsReady(boolean ready) {
         isReady = ready;
+    }
+
+    public boolean isIsCancel() {
+        return isCancel;
+    }
+
+    public void setIsCancel(boolean cancel) {
+        isCancel = cancel;
     }
 }

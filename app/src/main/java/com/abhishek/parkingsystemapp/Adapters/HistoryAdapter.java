@@ -45,11 +45,28 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         bookTime = bookTime.substring(0, bookTime.length() - 14) + bookTime.substring(bookTime.length() - 4);
         String arrival = "---";
         if(history.getArrival() != null){
-            arrival = history.getExit().toDate().toString();
+            arrival = history.getArrival().toDate().toString();
             arrival = arrival.substring(0, arrival.length() - 14) + arrival.substring(arrival.length() - 4);
+
+            if(history.getArrival().getSeconds() < history.getBookingTime().getSeconds()){
+                holder.rlMain.setBackground(context.getResources().getDrawable(R.drawable.edit_text_background_cancelled));
+                holder.tvArrival.setVisibility(View.GONE);
+                holder.tvExit.setVisibility(View.GONE);
+                holder.tvCancelled.setVisibility(View.VISIBLE);
+                holder.tvArrivalText.setVisibility(View.GONE);
+                holder.tvExitText.setVisibility(View.GONE);
+            }
+            else{
+                holder.rlMain.setBackground(context.getResources().getDrawable(R.drawable.edit_text_background));
+                holder.tvArrival.setVisibility(View.VISIBLE);
+                holder.tvExit.setVisibility(View.VISIBLE);
+                holder.tvCancelled.setVisibility(View.GONE);
+                holder.tvArrivalText.setVisibility(View.VISIBLE);
+                holder.tvExitText.setVisibility(View.VISIBLE);
+            }
         }
         else{
-            holder.rlMain.setBackground(context.getResources().getDrawable(R.drawable.edit_text_background_cancelled));
+            arrival = "---";
         }
 //        arrival = history.getArrival().toDate().toString();
 //        arrival = arrival.substring(0, arrival.length() - 14) + arrival.substring(arrival.length() - 4);
@@ -57,6 +74,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         if (history.getExit() != null){
             exit = history.getExit().toDate().toString();
             exit = exit.substring(0, exit.length() - 14) + exit.substring(exit.length() - 4);
+        }else{
+            exit = "---";
         }
         holder.tvBooking.setText(bookTime);
         holder.tvArrival.setText(arrival);
@@ -74,7 +93,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         TextView tvBooking, tvArrival, tvExit, tvAmount, tvTransaction;
+        TextView tvArrivalText, tvExitText;
         RelativeLayout rlMain;
+        TextView tvCancelled;
 
         public ViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
@@ -85,6 +106,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             tvAmount = itemView.findViewById(R.id.tvAmount_historyList);
             tvTransaction = itemView.findViewById(R.id.tvTransaction_historyList);
             rlMain = itemView.findViewById(R.id.rlhistoryList_main);
+            tvCancelled = itemView.findViewById(R.id.tvCancelled);
+            tvArrivalText = itemView.findViewById(R.id.tvArrival_historyList_Text);
+            tvExitText = itemView.findViewById(R.id.tvCheckout_historyList_Text);
 
         }
     }

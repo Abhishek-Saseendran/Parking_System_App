@@ -132,8 +132,8 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 String name = etName.getText().toString().trim();
-                String license = etLicense1.getText().toString().trim() + " - " + etLicense2.getText().toString().trim() + " - " +
-                         etLicense3.getText().toString().trim() + " - " + etLicense4.getText().toString().trim();
+                String license = etLicense1.getText().toString().trim() + etLicense2.getText().toString().trim() +
+                         etLicense3.getText().toString().trim() + etLicense4.getText().toString().trim();
                 license = license.toUpperCase();
                 Log.d("License Plate:: ", license);
                 String phone = etPhone.getText().toString().trim();
@@ -148,7 +148,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
                 else{
 
-                    if(license.length() >= 18 && dlNumber.length() == 16) //18 or 19 characters including " - " and 16 characters for dlNumber
+                    if(license.length() >= 9 && dlNumber.length() == 16) //9 or 10 characters and 16 characters for dlNumber
                         registerUser(name, license, phone, email, password, dlNumber);
                     else
                         Toast.makeText(RegisterActivity.this, "Enter correct credentials", Toast.LENGTH_SHORT).show();
@@ -175,7 +175,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     public void onComplete(@NonNull @NotNull Task task) {
                                         if (task.isSuccessful()){
                                             firestore = FirebaseFirestore.getInstance();
-                                            AppUser user = new AppUser(name, license, phone, email, 0.00, dlNumber, "", "", false, false);
+                                            AppUser user = new AppUser(name, license, phone, email, 0.00, dlNumber, "", "", false, false, false);
                                             firestore.collection("USERS")
                                                     .document(firebaseAuth.getCurrentUser().getUid())
                                                     .set(user)

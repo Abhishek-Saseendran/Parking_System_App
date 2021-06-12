@@ -131,9 +131,8 @@ public class MainActivity extends AppCompatActivity
                         if(value != null && value.exists()){
                             Log.d("User update : ", "Current data: " + value.getData());
                             userRealTimeInstance = value.toObject(AppUser.class);
-                            previousParked = userRealTimeInstance.isParked();
-
-                            if(userRealTimeInstance.isParked() && !userRealTimeInstance.getTransactionId().isEmpty()){
+                            Log.d("User update : ", "Current data: " + userRealTimeInstance.getName() + userRealTimeInstance.isIsReady());
+                            if(!userRealTimeInstance.isIsReady() && userRealTimeInstance.isParked() && !userRealTimeInstance.getTransactionId().isEmpty()){
                                 //Change Arrival time in User History
                                 Log.d("Changing arrival time ", "" + Timestamp.now());
                                 firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
@@ -150,8 +149,11 @@ public class MainActivity extends AppCompatActivity
                             else if(userRealTimeInstance.isIsReady() && !userRealTimeInstance.getTransactionId().isEmpty()){
                                 //Compute Amount
                                 Log.d("Computing check out!! ", "Checking out!!");
-                                checkoutSlot();
+                                Toast.makeText(MainActivity.this, "Checking ou!!...", Toast.LENGTH_SHORT).show();
+                                checkoutSlot(userRealTimeInstance.isIsCancel());
                             }
+//                            if(previousParked != userRealTimeInstance.isParked())
+//                                previousParked = userRealTimeInstance.isParked();
                         }
                         else {
                             Log.d("User update : ", "Current data: null");
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /////
-    private void checkoutSlot() {
+    private void checkoutSlot(boolean cancel) {
         //Confirm if user is exiting
         //Calculate Fair
         //If wallet has sufficient balance ://Update history
@@ -175,8 +177,12 @@ public class MainActivity extends AppCompatActivity
                                             //Set user slot number to empty and transationId to empty and deduct amount from wallet
         //Else : Do nothing!!
 
-        if(!userRealTimeInstance.getSlotNumber().isEmpty() && !userRealTimeInstance.getTransactionId().isEmpty())
-            openCheckoutDialog();
+        if(!userRealTimeInstance.getSlotNumber().isEmpty() && !userRealTimeInstance.getTransactionId().isEmpty() && !cancel)
+            openCheckoutDialog(cancel);
+        else{
+            Toast.makeText(MainActivity.this, "Your booking has been cancelled!!", Toast.LENGTH_SHORT).show();
+            openCheckoutDialog(cancel);
+        }
 
         updateUserToNotReady();
 
@@ -187,16 +193,18 @@ public class MainActivity extends AppCompatActivity
         firebaseAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
         firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
-                .update("isReady", false)
+                .update("isReady", false,
+                        "parked", false,
+                        "isCancel", false)
                 .addOnCompleteListener(new OnCompleteListener() {
                     @Override
                     public void onComplete(@NonNull @NotNull Task task) {
-                        Log.d("user to not ready!!", " Done!!");
+                        Log.d("user to not ready!!", " Done!! Also not cancel!!");
                     }
                 });
     }
 
-    private void openCheckoutDialog() {
+    private void openCheckoutDialog(boolean cancel) {
         //progressBar.setVisibility(View.VISIBLE);
         final UserHistory[] history = {new UserHistory()};
         firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
@@ -207,11 +215,16 @@ public class MainActivity extends AppCompatActivity
                     public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
                         if(task.isSuccessful() && task.getResult() != null){
                             history[0] = task.getResult().toObject(UserHistory.class);
+                            if(!cancel){
+                                CheckoutDialog checkout = new CheckoutDialog(userRealTimeInstance, history[0]);//, progressBar);
+                                checkout.show(getSupportFragmentManager(), "Checkout Dialog");
+                            }
+                            else{
+                                payment(history[0], userRealTimeInstance);
+                            }
                         }
                     }
                 });
-        CheckoutDialog checkout = new CheckoutDialog(userRealTimeInstance, history[0]);//, progressBar);
-        checkout.show(getSupportFragmentManager(), "Checkout Dialog");
     }
     //////
 
@@ -258,7 +271,7 @@ public class MainActivity extends AppCompatActivity
                                     public void onSuccess(DocumentReference documentReference) {
                                         history.setTransactionId(documentReference.getId());
                                         updateHistory(history);
-                                        updateSlot(history, slot);
+                                        updateSlot(history, slot, user);
 
                                         selectorFragment = new BookingFragment();
                                         getSupportFragmentManager().beginTransaction()
@@ -314,10 +327,11 @@ public class MainActivity extends AppCompatActivity
                 });
     }
 
-    private void updateSlot(UserHistory history, ParkingSlot slot) {
+    private void updateSlot(UserHistory history, ParkingSlot slot, AppUser user) {
         slot.setUserId(firebaseAuth.getCurrentUser().getUid());
         slot.setBooked(true);
         slot.setTransactionId(history.getTransactionId());
+        slot.setLicensePlate(user.getLicense());
         firestore.collection("PARKING").document(slot.getSlotId())
                 .set(slot)
                 .addOnCompleteListener(new OnCompleteListener() {
@@ -346,25 +360,29 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onComplete(@NonNull @NotNull Task task) {
                         if(task.isSuccessful()){
-                            
                             //Update Parking slot document
                             firestore.collection("PARKING").document(user.getSlotNumber())
                                     .update("booked", false,
                                             "transactionId", "",
-                                            "userId", "")
+                                            "userId", "",
+                                            "parked", false,
+                                            "licensePlate", "",
+                                            "elapsed_timer", false)
                                     .addOnCompleteListener(new OnCompleteListener() {
                                         @Override
                                         public void onComplete(@NonNull @NotNull Task task) {
                                             if(task.isSuccessful()){
-
                                                 //Update User document
-                                                user.setSlotNumber("");
+                                                user.setSlotNumber(""); //j
                                                 user.setWallet(user.getWallet() - history.getAmount());
-                                                user.setTransactionId("");
+                                                user.setTransactionId(""); //j
                                                 firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
                                                         .update("slotNumber", user.getSlotNumber(),
                                                                 "wallet", user.getWallet(),
-                                                                "transactionId", user.getTransactionId())
+                                                                "transactionId", user.getTransactionId(),
+                                                                "isReady",false,
+                                                                "parked",false,
+                                                                "isCancel", false)
                                                         .addOnCompleteListener(new OnCompleteListener() {
                                                             @Override
                                                             public void onComplete(@NonNull @NotNull Task task) {
@@ -373,7 +391,8 @@ public class MainActivity extends AppCompatActivity
                                                                     Toast.makeText(MainActivity.this,
                                                                             "Thank you!! Visit again " + user.getName() + "!! :)",
                                                                             Toast.LENGTH_SHORT).show();
-                                                                    Log.d("Successfully Checkout", "Please visit again" + user.getName());
+                                                                    Log.d("Successfully Checkout",
+                                                                            "Please visit again" + user.getName());
 
                                                                     selectorFragment = new BookingFragment();
                                                                     getSupportFragmentManager().beginTransaction()

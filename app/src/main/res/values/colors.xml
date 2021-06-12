@@ -2,12 +2,13 @@
 <resources>
     <color name="colorBlue">#62b6cb</color>
     <color name="colorBlueDark">#1b4965</color>
-    <color name="colorBlueLight">#bee9e8</color>
+    <color name="colorBlueLight">#8dcefc</color>
     <color name="colorBlueLighter">#cae9ff</color>
     <color name="colorPrimaryText">#212121</color>
     <color name="colorAccent">#5fa8d3</color>
-    <color name="colorSecondaryText">#757575</color>
+    <color name="colorSecondaryText">#4a4343</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="colorRedLight">#eb424d</color>
-    ,<color name="colorRedLighter">#f7606a</color>
+    <color name="colorRedLight">#ed766d</color>
+    ,<color name="colorRedLighter">#f0a1aa</color>
+    <color name="colorRed">#b82318</color>
 </resources>

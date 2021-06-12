@@ -10,18 +10,20 @@ public class ParkingSlot {
     String transactionId;
     boolean parked;
     boolean elapsed_timer;
+    String licensePlate;
 
     public ParkingSlot() {
     }
 
     public ParkingSlot(boolean booked, String userId, String slotId, String transactionId,
-                       boolean parked, boolean elapsed_timer) {
+                       boolean parked, boolean elapsed_timer, String licensePlate) {
         this.booked = booked;
         this.userId = userId;
         this.slotId = slotId;
         this.transactionId = transactionId;
         this.parked = parked;
         this.elapsed_timer = elapsed_timer;
+        this.licensePlate = licensePlate;
     }
 
     public boolean isBooked() {
@@ -70,5 +72,13 @@ public class ParkingSlot {
 
     public void setElapsed_timer(boolean elapsed_timer) {
         this.elapsed_timer = elapsed_timer;
+    }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
     }
 }

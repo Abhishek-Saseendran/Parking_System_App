@@ -57,7 +57,7 @@ public class CheckoutDialog extends AppCompatDialogFragment {
         tvArrival = view.findViewById(R.id.tvArrival);
         tvExit = view.findViewById(R.id.tvExit);
         history.setExit(Timestamp.now());
-        
+        Log.d("EXITING ::", history.getArrival() + " " + history.getExit());
         String arrival = history.getArrival().toDate().toString();
         arrival = arrival.substring(0, arrival.length() - 14) + arrival.substring(arrival.length() - 4);
         String exit = history.getExit().toDate().toString();
@@ -68,6 +68,10 @@ public class CheckoutDialog extends AppCompatDialogFragment {
         double time = (double) ((history.getExit().getSeconds() - history.getArrival().getSeconds()) / 3600.0); //Seconds to hour conversion
         if(time < 1.00){ //Minimum 50/-
             amount = 50;
+            if(history.getArrival().getSeconds() > history.getExit().getSeconds()){
+                arrival = "---";
+                exit = "---";
+            }
         }
         else{ //Above 1hr, its 50/- per hour
             amount = time * 50;
@@ -93,7 +97,7 @@ public class CheckoutDialog extends AppCompatDialogFragment {
                 .setPositiveButton("Checkout", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(user.getWallet() > amount){ //Allow
+                        if(user.getWallet() >= amount){ //Allow
                             listener.payment(history, user);
                         }
                         else{
