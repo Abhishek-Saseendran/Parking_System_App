@@ -332,6 +332,7 @@ public class MainActivity extends AppCompatActivity
         slot.setBooked(true);
         slot.setTransactionId(history.getTransactionId());
         slot.setLicensePlate(user.getLicense());
+        slot.setElapsed_timer(true);
         firestore.collection("PARKING").document(slot.getSlotId())
                 .set(slot)
                 .addOnCompleteListener(new OnCompleteListener() {
