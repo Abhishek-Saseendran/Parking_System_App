@@ -26,10 +26,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends Fragment implements Comparator<UserHistory> {
 
     RecyclerView rvHistory;
     HistoryAdapter historyAdapter;
@@ -79,6 +81,7 @@ public class HistoryFragment extends Fragment {
                             historyList = new ArrayList<>();
                             historyList = task.getResult().toObjects(UserHistory.class);
                             if(historyList.size() > 0){
+                                Collections.sort(historyList,new HistoryFragment());
                                 historyAdapter = new HistoryAdapter(getActivity(), historyList);
                                 rvHistory.setAdapter(historyAdapter);
                                 historyAdapter.notifyDataSetChanged();
@@ -93,5 +96,10 @@ public class HistoryFragment extends Fragment {
                         progressBar.setVisibility(View.INVISIBLE);
                     }
                 });
+    }
+
+    @Override
+    public int compare(UserHistory o1, UserHistory o2) {
+        return (int) (o1.getBookingTime().getSeconds() - o2.getBookingTime().getSeconds()) * -1;
     }
 }

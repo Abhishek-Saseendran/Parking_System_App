@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 
-public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder>{
+public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
 
     Context context;
     List<UserHistory> historyList;
