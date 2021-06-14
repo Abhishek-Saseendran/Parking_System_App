@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity
                             else if(userRealTimeInstance.isIsReady() && !userRealTimeInstance.getTransactionId().isEmpty()){
                                 //Compute Amount
                                 Log.d("Computing check out!! ", "Checking out!!");
-                                Toast.makeText(MainActivity.this, "Checking ou!!...", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, "Checking out!!...", Toast.LENGTH_SHORT).show();
                                 checkoutSlot(userRealTimeInstance.isIsCancel());
                             }
 //                            if(previousParked != userRealTimeInstance.isParked())

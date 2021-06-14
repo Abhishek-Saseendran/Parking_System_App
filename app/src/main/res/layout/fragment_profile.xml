@@ -88,7 +88,7 @@
                 android:gravity="end"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:drawableStart="@drawable/ic_booking"
+                android:drawableStart="@drawable/ic_name"
                 android:drawableTint="@color/colorBlueDark"
                 android:drawablePadding="10dp"/>
 
@@ -104,7 +104,7 @@
                 android:gravity="end"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:drawableStart="@drawable/ic_name"
+                android:drawableStart="@drawable/ic_booking"
                 android:drawableTint="@color/colorBlueDark"
                 android:drawablePadding="10dp"/>
 
