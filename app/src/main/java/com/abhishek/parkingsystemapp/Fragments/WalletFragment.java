@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ public class WalletFragment extends Fragment {
     TextView tvAmount;
     Button btnAddAmount, btnAdd50, btnAdd100, btnAdd500;
     ProgressBar progressBar;
+    RelativeLayout rlHidden;
 
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firestore;
@@ -60,6 +62,8 @@ public class WalletFragment extends Fragment {
         btnAdd100 = view.findViewById(R.id.btnAdd100);
         btnAdd500 = view.findViewById(R.id.btnAdd500);
         progressBar = view.findViewById(R.id.progressBar);
+        rlHidden = view.findViewById(R.id.rlHidden);
+        rlHidden.setClickable(true);
 
         progressBar.setVisibility(View.INVISIBLE);
 

@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity
     FirebaseFirestore firestore;
 
     AppUser userRealTimeInstance;
-    boolean previousParked = false;
+    //boolean previousParked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
