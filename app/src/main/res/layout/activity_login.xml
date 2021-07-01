@@ -61,7 +61,7 @@
             android:padding="10dp"
             android:textSize="14sp" />
 
-        <Button
+        <android.widget.Button
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"

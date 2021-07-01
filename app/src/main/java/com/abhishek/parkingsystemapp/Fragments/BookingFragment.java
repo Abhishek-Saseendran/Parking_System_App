@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +25,12 @@ import com.abhishek.parkingsystemapp.Models.UserHistory;
 import com.abhishek.parkingsystemapp.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -38,7 +42,7 @@ import java.util.List;
 public class BookingFragment extends Fragment {
 
     ImageView ivNumber;
-    Button btnCheckAvailability, btnBook;
+    Button btnCheckAvailability, btnBook, btnCancel;
     RelativeLayout rlHidden;
     ProgressBar progressBar;
 
@@ -62,6 +66,7 @@ public class BookingFragment extends Fragment {
         ivNumber = view.findViewById(R.id.ivNumber);
         btnCheckAvailability = view.findViewById(R.id.btnCheckAvailability);
         btnBook = view.findViewById(R.id.btnBookSlot);
+        btnCancel = view.findViewById(R.id.btnCancelSlot);
         rlHidden = view.findViewById(R.id.rlHidden);
         progressBar = view.findViewById(R.id.progressBar);
 
@@ -87,6 +92,13 @@ public class BookingFragment extends Fragment {
             }
         });
 
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancelBooking();
+            }
+        });
+
 //        rlHidden.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -94,7 +106,68 @@ public class BookingFragment extends Fragment {
 //            }
 //        });
 
+
         return view;
+    }
+
+    private void cancelBooking() {
+        firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful() && task.getResult() != null){
+                            user = task.getResult().toObject(AppUser.class);
+                            firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
+                                    .collection("HISTORY").document(user.getTransactionId())
+                                    .update("arrival", new Timestamp(0, 0))
+                                    .addOnCompleteListener(new OnCompleteListener() {
+                                        @Override
+                                        public void onComplete(@NonNull @NotNull Task task) {
+                                            if(task.isSuccessful()){
+                                                setParkingUserCancelled();
+                                                setUserIsCancelled();
+                                            }
+                                        }
+                                    });
+                        }
+                        else {
+                            Toast.makeText(getActivity(), "Something went wrong!!", Toast.LENGTH_SHORT).show();
+                            firebaseAuth.signOut();
+                            startActivity(new Intent(getActivity(), com.abhishek.parkingsystemapp.StartActivity.class));
+                            getActivity().finish();
+                        }
+                    }
+                });
+    }
+
+    private void setUserIsCancelled() {
+
+        firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
+                .update("isCancel", true,
+                        "isReady", true)
+                .addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task task) {
+                        if(task.isSuccessful()){
+                            Toast.makeText(getActivity(), "Cancelling...", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void setParkingUserCancelled() {
+
+        firestore.collection("PARKING").document(user.getSlotNumber())
+                .update("userCancelled", true)
+                .addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task task) {
+                        if(task.isSuccessful()){
+                            Log.d("user cancelled : ", "The user has cancelled the booking!");
+                        }
+                    }
+                });
     }
 
     private void getUser() {

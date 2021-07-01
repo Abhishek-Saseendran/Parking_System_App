@@ -152,6 +152,18 @@ public class MainActivity extends AppCompatActivity
                                 Toast.makeText(MainActivity.this, "Checking out!!...", Toast.LENGTH_SHORT).show();
                                 checkoutSlot(userRealTimeInstance.isIsCancel());
                             }
+
+                            if(userRealTimeInstance.isParked() || (userRealTimeInstance.getSlotNumber().isEmpty() && userRealTimeInstance.getTransactionId().isEmpty())){
+                                //Show cancel button
+                                MainActivity.this.getSupportFragmentManager().findFragmentById(R.id.fragment_container)
+                                        .getView().findViewById(R.id.btnCancelSlot).setVisibility(View.GONE);
+                                //I'm so sorry if your app crashes!
+                            }
+                            else{
+                                MainActivity.this.getSupportFragmentManager().findFragmentById(R.id.fragment_container)
+                                        .getView().findViewById(R.id.btnCancelSlot).setVisibility(View.VISIBLE);
+                            }
+
 //                            if(previousParked != userRealTimeInstance.isParked())
 //                                previousParked = userRealTimeInstance.isParked();
                         }
