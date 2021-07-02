@@ -85,7 +85,7 @@
             android:gravity="center"
             android:background="@drawable/button_background_cancelled"
             android:id="@+id/btnCancelSlot"
-            android:visibility="gone" /> <!-- gone/visible -->
+            android:visibility="visible" /> <!-- gone/visible -->
 
     </LinearLayout>
 

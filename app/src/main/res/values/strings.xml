@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Parking System App</string>
-    <string name="parking_system_app">Parking System <br />App</string>
+    <string name="app_name">ParkSmart</string>
+    <string name="parking_system_app">ParkSmart</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
 
@@ -10,5 +10,4 @@
     <string name="welcome_back">Welcome back!!\nSign in to continue..</string>
     <string name="forgot_password">Forgot Password? <br /> Dont worry, <u>Click here!!</u></string>
     <string name="sign_out">Sign Out</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
