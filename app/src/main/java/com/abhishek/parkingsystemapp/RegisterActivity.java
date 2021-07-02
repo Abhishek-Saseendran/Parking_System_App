@@ -175,7 +175,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     public void onComplete(@NonNull @NotNull Task task) {
                                         if (task.isSuccessful()){
                                             firestore = FirebaseFirestore.getInstance();
-                                            AppUser user = new AppUser(name, license, phone, email, 0.00, dlNumber, "", "", false, false, false);
+                                            AppUser user = new AppUser(name, license, phone, email, 0.00, dlNumber, "", "", false, false, false, 0);
                                             firestore.collection("USERS")
                                                     .document(firebaseAuth.getCurrentUser().getUid())
                                                     .set(user)

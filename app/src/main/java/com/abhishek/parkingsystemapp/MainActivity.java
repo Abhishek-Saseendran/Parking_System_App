@@ -35,6 +35,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -45,10 +46,12 @@ import org.jetbrains.annotations.NotNull;
 public class MainActivity extends AppCompatActivity
         implements WalletDialog.WalletDialogListener,
         BookingDialog.BookingDialogListener,
-        CheckoutDialog.CheckoutDialogListener {
+        CheckoutDialog.CheckoutDialogListener{
 
     private BottomNavigationView bnNav;
     private Fragment selectorFragment;
+
+    private String fragmentTag = "BOOKING-FRAGMENT";
 
     FirebaseAuth firebaseAuth;
     FirebaseFirestore firestore;
@@ -89,24 +92,30 @@ public class MainActivity extends AppCompatActivity
                 switch (item.getItemId()){
 
                     case R.id.nav_profile: selectorFragment = new ProfileFragment();
+                                            fragmentTag = "PROFILE-FRAGMENT";
                                             break;
 
                     case R.id.nav_booking: selectorFragment = new BookingFragment();
+                                            fragmentTag = "BOOKING-FRAGMENT";
+                                            triggerSnapshot();
                                             break;
 
                     case R.id.nav_wallet: selectorFragment = new WalletFragment();
+                                            fragmentTag = "WALLET-FRAGMENT";
                                             break;
 
                     case R.id.nav_history: selectorFragment = new HistoryFragment();
+                                            fragmentTag = "HISTORY-FRAGMENT";
                                             break;
 
                 }
 
                 if (selectorFragment != null)
                 {
+                    Log.d("FRAGMENT IN :; ", fragmentTag);
                     getSupportFragmentManager().beginTransaction()
                             .setCustomAnimations(R.anim.slide_in_left, R.anim.slide_out_right)
-                            .replace(R.id.fragment_container, selectorFragment)
+                            .replace(R.id.fragment_container, selectorFragment, fragmentTag)
                             .commit();
                 }
 
@@ -155,13 +164,19 @@ public class MainActivity extends AppCompatActivity
 
                             if(userRealTimeInstance.isParked() || (userRealTimeInstance.getSlotNumber().isEmpty() && userRealTimeInstance.getTransactionId().isEmpty())){
                                 //Show cancel button
-                                MainActivity.this.getSupportFragmentManager().findFragmentById(R.id.fragment_container)
-                                        .getView().findViewById(R.id.btnCancelSlot).setVisibility(View.GONE);
+                                BookingFragment myFragment = (BookingFragment)getSupportFragmentManager().findFragmentByTag("BOOKING-FRAGMENT");
+                                Log.d("FRAGMENT IN  :; ", fragmentTag + " (REALTIME) " + myFragment);
+                                if(myFragment != null && myFragment.isVisible())
+                                    MainActivity.this.getSupportFragmentManager().findFragmentById(R.id.fragment_container)
+                                            .getView().findViewById(R.id.btnCancelSlot).setVisibility(View.GONE);
                                 //I'm so sorry if your app crashes!
                             }
                             else{
-                                MainActivity.this.getSupportFragmentManager().findFragmentById(R.id.fragment_container)
-                                        .getView().findViewById(R.id.btnCancelSlot).setVisibility(View.VISIBLE);
+                                BookingFragment myFragment = (BookingFragment)getSupportFragmentManager().findFragmentByTag("BOOKING-FRAGMENT");
+                                Log.d("FRAGMENT IN  :; ", fragmentTag + " (REALTIME) " + myFragment);
+                                if(myFragment != null && myFragment.isVisible())
+                                    MainActivity.this.getSupportFragmentManager().findFragmentById(R.id.fragment_container)
+                                            .getView().findViewById(R.id.btnCancelSlot).setVisibility(View.VISIBLE);
                             }
 
 //                            if(previousParked != userRealTimeInstance.isParked())
@@ -172,6 +187,11 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
                 });
+    }
+
+    private void triggerSnapshot() {
+        firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
+                .update("irrelevant", FieldValue.increment(1));
     }
 
     @Override
@@ -286,8 +306,9 @@ public class MainActivity extends AppCompatActivity
                                         updateSlot(history, slot, user);
 
                                         selectorFragment = new BookingFragment();
+                                        fragmentTag = "BOOKING-FRAGMENT";
                                         getSupportFragmentManager().beginTransaction()
-                                                .replace(R.id.fragment_container, selectorFragment)
+                                                .replace(R.id.fragment_container, selectorFragment, fragmentTag)
                                                 .commit();
 
                                     }
@@ -389,13 +410,15 @@ public class MainActivity extends AppCompatActivity
                                                 user.setSlotNumber(""); //j
                                                 user.setWallet(user.getWallet() - history.getAmount());
                                                 user.setTransactionId(""); //j
+                                                user.setIrrelevant(0);
                                                 firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
                                                         .update("slotNumber", user.getSlotNumber(),
                                                                 "wallet", user.getWallet(),
                                                                 "transactionId", user.getTransactionId(),
                                                                 "isReady",false,
                                                                 "parked",false,
-                                                                "isCancel", false)
+                                                                "isCancel", false,
+                                                                "irrelevant", user.getIrrelevant())
                                                         .addOnCompleteListener(new OnCompleteListener() {
                                                             @Override
                                                             public void onComplete(@NonNull @NotNull Task task) {
