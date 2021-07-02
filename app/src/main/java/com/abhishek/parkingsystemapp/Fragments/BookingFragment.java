@@ -207,7 +207,7 @@ public class BookingFragment extends Fragment {
                 });
     }
 
-    public void getAvailability(boolean bookSlot) {
+    private void getAvailability(boolean bookSlot) {
 
         progressBar.setVisibility(View.VISIBLE);
 
