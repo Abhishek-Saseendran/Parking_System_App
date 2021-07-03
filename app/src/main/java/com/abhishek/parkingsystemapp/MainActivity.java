@@ -143,15 +143,29 @@ public class MainActivity extends AppCompatActivity
                             Log.d("User update : ", "Current data: " + userRealTimeInstance.getName() + userRealTimeInstance.isIsReady());
                             if(!userRealTimeInstance.isIsReady() && userRealTimeInstance.isParked() && !userRealTimeInstance.getTransactionId().isEmpty()){
                                 //Change Arrival time in User History
-                                Log.d("Changing arrival time ", "" + Timestamp.now());
+                                final UserHistory[] historyTemp = {new UserHistory()};
                                 firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
                                         .collection("HISTORY").document(userRealTimeInstance.getTransactionId())
-                                        .update("arrival", Timestamp.now())
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        .get()
+                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                                             @Override
-                                            public void onComplete(@NonNull @NotNull Task<Void> task) {
-                                                Toast.makeText(MainActivity.this, "Hello!! You've arrived!!", Toast.LENGTH_SHORT)
-                                                        .show();
+                                            public void onComplete(@NonNull @NotNull Task<DocumentSnapshot> task) {
+                                                if(task != null && task.isSuccessful()){
+                                                    historyTemp[0] = task.getResult().toObject(UserHistory.class);
+                                                    if(historyTemp[0].getArrival() == null){
+                                                        Log.d("Changing arrival time ", "" + Timestamp.now());
+                                                        firestore.collection("USERS").document(firebaseAuth.getCurrentUser().getUid())
+                                                                .collection("HISTORY").document(userRealTimeInstance.getTransactionId())
+                                                                .update("arrival", Timestamp.now())
+                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull @NotNull Task<Void> task) {
+                                                                        Toast.makeText(MainActivity.this, "Hello!! You've arrived!!", Toast.LENGTH_SHORT)
+                                                                                .show();
+                                                                    }
+                                                                });
+                                                    }
+                                                }
                                             }
                                         });
                             }
