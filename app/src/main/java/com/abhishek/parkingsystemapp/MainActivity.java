@@ -159,11 +159,17 @@ public class MainActivity extends AppCompatActivity
                                 //Compute Amount
                                 Log.d("Computing check out!! ", "Checking out!!");
                                 Toast.makeText(MainActivity.this, "Checking out!!...", Toast.LENGTH_SHORT).show();
+                                //Added this!
+                                BookingFragment myFragment = (BookingFragment)getSupportFragmentManager().findFragmentByTag("BOOKING-FRAGMENT");
+                                Log.d("FRAGMENT IN  :; ", fragmentTag + " (REALTIME) " + myFragment + ", checking out..");
+                                if(myFragment != null && myFragment.isVisible())
+                                    MainActivity.this.getSupportFragmentManager().findFragmentById(R.id.fragment_container)
+                                            .getView().findViewById(R.id.btnCancelSlot).setVisibility(View.GONE);
                                 checkoutSlot(userRealTimeInstance.isIsCancel());
                             }
 
                             if(userRealTimeInstance.isParked() || (userRealTimeInstance.getSlotNumber().isEmpty() && userRealTimeInstance.getTransactionId().isEmpty())){
-                                //Show cancel button
+                                //Hide cancel button
                                 BookingFragment myFragment = (BookingFragment)getSupportFragmentManager().findFragmentByTag("BOOKING-FRAGMENT");
                                 Log.d("FRAGMENT IN  :; ", fragmentTag + " (REALTIME) " + myFragment);
                                 if(myFragment != null && myFragment.isVisible())
@@ -172,6 +178,7 @@ public class MainActivity extends AppCompatActivity
                                 //I'm so sorry if your app crashes!
                             }
                             else{
+                                //Show cancel button
                                 BookingFragment myFragment = (BookingFragment)getSupportFragmentManager().findFragmentByTag("BOOKING-FRAGMENT");
                                 Log.d("FRAGMENT IN  :; ", fragmentTag + " (REALTIME) " + myFragment);
                                 if(myFragment != null && myFragment.isVisible())
